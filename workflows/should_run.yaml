@@ -1,0 +1,35 @@
+name: Should Run Logic
+
+on:
+  workflow_call:
+    outputs:
+      should_run: 
+        description: "If the workflow should run"
+        value: ${{ jobs.should_run.outputs.should_run }}
+
+jobs:
+  should_run:
+    runs-on: ubuntu-latest
+    name: Checks if workflow should run based on event_name and author of latest commit
+    outputs:
+      should_run: ${{ steps.step1.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: print last commit author name
+        run: |
+          echo "Event name: ${{github.event_name}}"
+          export AUTHOR=$(git log -1 --pretty=format:'%an' | xargs)
+          echo "LAST_AUTHOR=$AUTHOR" >> $GITHUB_ENV
+          echo "Last commit author: $AUTHOR"
+          export LAST_24_COMMITS=$(git rev-list  --after="10 minutes" ${{ github.sha }})
+          echo "Commits last 24hrs: $LAST_24_COMMITS"
+          if (test -z $LAST_24_COMMITS);
+            then echo "LAST_24=false" >> $GITHUB_ENV;
+            else echo "LAST_24=true" >> $GITHUB_ENV;
+          fi
+
+      - id: step1
+        continue-on-error: true
+        name: Only run on scheduled deploy if last commit was by dependabot[bot] and greater than 24hrs ago
+        if: ((github.event_name == 'schedule' && env.LAST_AUTHOR == 'dependabot[bot]' && env.LAST_24 == 'false') || (github.event_name == 'push'))
+        run: echo "::set-output name=should_run::true"

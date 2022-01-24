@@ -9,7 +9,7 @@ on:
 
 jobs:
   should_run:
-    uses: IATI/.github/.github/workflows/should_run.yaml@0.1.0
+    uses: IATI/.github/.github/workflows/should_run.yaml@main
 
   build-deploy:
     needs: should_run

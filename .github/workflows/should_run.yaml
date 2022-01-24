@@ -22,14 +22,14 @@ jobs:
           echo "LAST_AUTHOR=$AUTHOR" >> $GITHUB_ENV
           echo "Last commit author: $AUTHOR"
           export LAST_24_COMMITS_DPB=$(git rev-list --after="24 hours" --author=dependabot ${{ github.sha }})
-          echo "Commits last 24hrs: $LAST_24_COMMITS_DPB"
+          echo "Dependabot commits last 24hrs: $LAST_24_COMMITS_DPB"
           if (test -z $LAST_24_COMMITS_DPB);
-            then echo "LAST_24=false" >> $GITHUB_ENV;
-            else echo "LAST_24=true" >> $GITHUB_ENV;
+            then echo "LAST_24_DPB=false" >> $GITHUB_ENV;
+            else echo "LAST_24_DPB=true" >> $GITHUB_ENV;
           fi
 
       - id: step1
         continue-on-error: true
-        name: Only run on scheduled deploy if last commit was by dependabot[bot] in last 24hrs
-        if: ((github.event_name == 'schedule' && env.LAST_AUTHOR == 'dependabot[bot]' && env.LAST_24 == 'true') || (github.event_name == 'push'))
+        name: Only run deploy on scheduled run if last commit was by dependabot[bot] in last 24hrs
+        if: ((github.event_name == 'schedule' && env.LAST_AUTHOR == 'dependabot[bot]' && env.LAST_24_DPB == 'true') || (github.event_name == 'push'))
         run: echo "::set-output name=should_run::true"

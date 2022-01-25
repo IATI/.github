@@ -12,9 +12,9 @@ on:
       rediskey:
         required: true 
         type: string
+    secrets:
       DEFAULT_KEY:
         required: true
-        type: string
 
 jobs:
   cache-redis:
@@ -31,7 +31,7 @@ jobs:
           echo $FILE_COMMIT_SHA
           HTTP_CODE=$(curl --write-out "%{http_code}\n" \
           --location --request POST 'https://func-iati-redis-cacher-${{ inputs.environment }}.azurewebsites.net/api/pvt/cache?key=${{ inputs.rediskey }}&commitsha='$FILE_COMMIT_SHA \
-          --header 'x-functions-key: '${{ inputs.DEFAULT_KEY }} \
+          --header 'x-functions-key: '${{ secrets.DEFAULT_KEY }} \
           --header 'Content-Type: application/json' \
           --data-binary '@${{ inputs.filepath }}' \
           --output curl_out.txt \

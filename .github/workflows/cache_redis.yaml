@@ -1,0 +1,44 @@
+name: Cache to IATI Redis Instances
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      filepath:
+        required: true
+        type: string
+      rediskey:
+        required: true 
+        type: string
+      DEFAULT_KEY:
+        required: true
+        type: string
+
+jobs:
+  cache-redis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Number of commits to fetch. 0 indicates all history for all branches and tags.
+          fetch-depth: 0
+
+      - name: POST ${{ inputs.filepath }} to func-iati-redis-cacher-${{ inputs.environment }}
+        run: | 
+          FILE_COMMIT_SHA=$(git log -1 --format='%H' -- ${{ inputs.filepath }})
+          echo $FILE_COMMIT_SHA
+          HTTP_CODE=$(curl --write-out "%{http_code}\n" \
+          --location --request POST 'https://func-iati-redis-cacher-${{ inputs.environment }}.azurewebsites.net/api/pvt/cache?key=${{ inputs.rediskey }}&commitsha='$FILE_COMMIT_SHA \
+          --header 'x-functions-key: '${{ inputs.DEFAULT_KEY }} \
+          --header 'Content-Type: application/json' \
+          --data-binary '@${{ inputs.filepath }}' \
+          --output curl_out.txt \
+          --silent )
+          echo $HTTP_CODE
+          if [[ $HTTP_CODE != '200' ]] ; then
+            echo "Reponse is not 200 from func-iati-redis-cacher-${{ inputs.environment }}, check error logs"
+            cat curl_out.txt
+            exit 1
+          fi

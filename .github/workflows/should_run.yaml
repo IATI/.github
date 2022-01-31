@@ -10,7 +10,7 @@ on:
 jobs:
   should_run:
     runs-on: ubuntu-latest
-    name: Checks if workflow should run based on event_name, last commits, and author of latest commit
+    name: Checks if workflow should run based on event_name, commits in last 24hrs, and author of latest commit
     outputs:
       should_run: ${{ steps.step1.outputs.should_run }}
     steps:
@@ -30,6 +30,6 @@ jobs:
 
       - id: step1
         continue-on-error: true
-        name: Only run deploy on scheduled run if last commit was by dependabot[bot] in last 24hrs
+        name: Only run deploy on scheduled action if last commit was by dependabot[bot] and dependabot[bot] has made a commit in the last 24hrs
         if: ((github.event_name == 'schedule' && env.LAST_AUTHOR == 'dependabot[bot]' && env.LAST_24_DPB == 'true') || (github.event_name == 'push'))
         run: echo "::set-output name=should_run::true"

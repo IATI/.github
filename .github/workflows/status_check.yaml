@@ -23,4 +23,4 @@ jobs:
           -H "Authorization: Bearer $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/$REPO/check-runs \
-          -d '{"name":"deploy", "head_sha": "'"$DEPLOY_COMMIT"'", "status": "completed", "conclusion": "success" }'
+          -d '{"name":"sched_deploy_success", "head_sha": "'"$DEPLOY_COMMIT"'", "status": "completed", "conclusion": "success" }'

@@ -1,0 +1,26 @@
+name: Pass Status Check
+
+on:
+  workflow_call:
+
+jobs:
+  should_run:
+    runs-on: ubuntu-latest
+    name: Creates status check for scheduled deployments
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create status check
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        if: github.event_name == 'schedule'
+        run: |
+          echo $REPO
+          DEPLOY_COMMIT=$(git rev-parse HEAD)
+          curl \
+          -X POST \
+          -H "Authorization: Bearer $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/$REPO/check-runs \
+          -d '{"name":"deploy", "head_sha": "'"$DEPLOY_COMMIT"'", "status": "completed", "conclusion": "success" }'

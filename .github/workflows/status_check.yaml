@@ -22,7 +22,7 @@ jobs:
             --method POST \
             -H "Accept: application/vnd.github.v3+json" \
             /repos/$REPO/statuses/$DEPLOY_COMMIT \
-            -f state='success' \
-            -f target_url='https://github.com/$REPO/actions/runs/$RUN_ID' \
-            -f description='The latest scheduled deploy succeeded!' \
-            -f context='scheduled-deploy'
+            -f state="success" \
+            -f target_url="https://github.com/$REPO/actions/runs/$RUN_ID" \
+            -f description="The latest scheduled deploy succeeded" \
+            -f context="scheduled-deploy"

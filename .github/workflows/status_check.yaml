@@ -14,13 +14,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
         if: github.event_name == 'schedule'
         run: |
-          echo $REPO
           DEPLOY_COMMIT=$(git rev-parse HEAD)
-          curl \
-          -X POST \
-          -H "Authorization: Bearer $GITHUB_TOKEN" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/$REPO/check-runs \
-          -d '{"name":"sched_deploy_success", "head_sha": "'"$DEPLOY_COMMIT"'", "status": "completed", "conclusion": "success" }'
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            /repos/$REPO/statuses/$DEPLOY_COMMIT \
+            -f state='success' \
+            -f target_url='https://github.com/$REPO/actions/runs/$RUN_ID' \
+            -f description='The latest scheduled deploy succeeded!' \
+            -f context='scheduled-deploy'

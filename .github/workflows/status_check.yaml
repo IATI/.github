@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  should_run:
+  status_check:
     runs-on: ubuntu-latest
     name: Creates status check for scheduled deployments
     steps:

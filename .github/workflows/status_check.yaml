@@ -1,4 +1,4 @@
-name: Pass Status Check
+name: Commit Status for Scheduled Deployments
 
 on:
   workflow_call:
@@ -6,16 +6,33 @@ on:
 jobs:
   status_check:
     runs-on: ubuntu-latest
-    name: Creates status check for scheduled deployments
+    name: Marks commit status for scheduled deployments
     steps:
       - uses: actions/checkout@v3
-      - name: Create status check
+      - name: Fail status check
         continue-on-error: true
+        if: ${{ failure() }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
-        if: github.event_name == 'schedule'
+        run: |
+          DEPLOY_COMMIT=$(git rev-parse HEAD)
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            /repos/$REPO/statuses/$DEPLOY_COMMIT \
+            -f state="failure" \
+            -f target_url="https://github.com/$REPO/actions/runs/$RUN_ID" \
+            -f description="The latest scheduled deploy failed" \
+            -f context="scheduled-deploy"
+            
+      - name: Pass status check
+        if: ${{ success() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           DEPLOY_COMMIT=$(git rev-parse HEAD)
           gh api \

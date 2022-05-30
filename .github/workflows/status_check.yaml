@@ -2,6 +2,10 @@ name: Commit Status for Scheduled Deployments
 
 on:
   workflow_call:
+    inputs:
+      success:
+        required: true
+        type: boolean
 
 jobs:
   status_check:
@@ -9,9 +13,13 @@ jobs:
     name: Marks commit status for scheduled deployments
     steps:
       - uses: actions/checkout@v3
+      - name: Check input
+        run: |
+          SUCCESS=${{ inputs.success }}
+          echo $SUCCESS
       - name: Fail status check
         continue-on-error: true
-        if: ${{ failure() }}
+        if: ${{ inputs.success == 'false' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -26,9 +34,9 @@ jobs:
             -f target_url="https://github.com/$REPO/actions/runs/$RUN_ID" \
             -f description="The latest scheduled deploy failed" \
             -f context="scheduled-deploy"
-            
+
       - name: Pass status check
-        if: ${{ success() }}
+        if: ${{ inputs.success == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}

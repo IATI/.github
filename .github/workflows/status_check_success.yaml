@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Marks commit status as successfully for scheduled deployments
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
       - name: Status check success
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

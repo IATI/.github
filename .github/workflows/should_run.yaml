@@ -14,7 +14,7 @@ jobs:
     outputs:
       should_run: ${{ steps.step1.outputs.should_run }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
       - name: Set up environment variables
         run: |
           echo "Event name: ${{github.event_name}}"
@@ -31,5 +31,5 @@ jobs:
       - id: step1
         continue-on-error: true
         name: Only run deploy on scheduled action if last commit was by dependabot[bot] and dependabot[bot] has made a commit in the last 24hrs
-        if: ((github.event_name == 'schedule' && env.LAST_AUTHOR == 'dependabot[bot]' && env.LAST_24_DPB == 'true') || (github.event_name == 'push'))
+        if: ((github.event_name == 'schedule' && env.LAST_AUTHOR == 'dependabot[bot]' && env.LAST_24_DPB == 'true') || (github.event_name == 'push') || (github.event_name == 'workflow_dispatch'))
         run: echo "should_run=true" >> $GITHUB_OUTPUT

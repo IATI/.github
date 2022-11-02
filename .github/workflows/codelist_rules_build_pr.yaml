@@ -64,6 +64,7 @@ jobs:
           gh pr create --base=version-$VERSION \
           --title "codelist_rules.json update $VERSION" \
           --body "$MESSAGE"
+          --reviewer @IATI/devs
         env:
           GITHUB_TOKEN: ${{ secrets.IATI_BOT_PAT }}
           TRIGGER_REPO: ${{ inputs.repo }}

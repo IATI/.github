@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: $VERSION
+          ref: version-$VERSION
           submodules: recursive
 
       - name: Set up Python

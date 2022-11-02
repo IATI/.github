@@ -1,0 +1,70 @@
+name: Build Codelist Rules and Create a PR
+
+on:
+  workflow_call:
+    inputs:
+      VERSION:
+        required: true
+        type: string
+      TRIGGER_REPO:
+        required: true
+        type: string
+      TRIGGER_SHA:
+        required: true 
+        type: string
+    secrets:
+      IATI_BOT_PAT:
+        required: true
+
+jobs:
+  build-pr:
+    env:
+      VERSION: ${{ inputs.VERSION }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: $VERSION
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get -y install libxml2-dev libxslt-dev libxslt1-dev python3-dev python3-lxml libxml2-utils
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -r requirements.txt
+
+      - name: Build
+        run: |
+          ./gen.sh
+
+      - name: 'Setup git config'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+
+      - name: 'Commit changes'
+        run: |
+          BRANCH="update/$VERSION/$TRIGGER_SHA"
+          git checkout -b "$BRANCH"
+          RESP=$(git add codelist_rules.json -v)
+          if [[ $RESP == "" ]]; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          TRIGGERED_BY=$TRIGGER_REPO' '$TRIGGER_SHA
+          MESSAGE='codelist_rules.json updated by GitHub Actions triggered by '$TRIGGERED_BY
+          git commit -m "$MESSAGE"
+          git push origin "$BRANCH"
+          gh pr create --base=version-2.02 \
+          --title "codelist_rules.json update $VERSION" \
+          --body "$MESSAGE"
+        env:
+          GITHUB_TOKEN: ${{ secrets.IATI_BOT_PAT }}
+          TRIGGER_REPO: ${{ inputs.repo }}
+          TRIGGER_SHA: ${{ inputs.SHA }}

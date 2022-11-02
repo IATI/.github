@@ -1,0 +1,31 @@
+name: Trigger update of Validator Codelists repository
+
+on:
+  workflow_call:
+    inputs:
+      VERSION:
+        required: true
+        type: string
+    secrets:
+      IATI_BOT_PAT:
+        required: true
+
+jobs:
+  update-validator-codelists:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Trigger update of Validator Codelists repository"
+        run: |
+          HTTP_CODE=$(curl --write-out "%{http_code}\n" \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -H 'Authorization: Bearer ${{ secrets.IATI_BOT_PAT }}' \
+          -X POST https://api.github.com/repos/IATI/IATI-Validator-Codelists/actions/workflows/dispatch-CI.yaml/dispatches \
+          --data '{"ref": "version-${{ inputs.VERSION }}", "inputs": { "repo": "'"$GITHUB_REPOSITORY"'", "sha": "'"$GITHUB_SHA"'"}}' \
+          --output curl_out.txt \
+          --silent )
+          echo $HTTP_CODE
+          if [[ $HTTP_CODE != '204' ]] ; then
+            echo "Reponse is not 204, check error logs"
+            cat curl_out.txt
+            exit 1
+          fi

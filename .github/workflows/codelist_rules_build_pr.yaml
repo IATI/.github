@@ -61,7 +61,7 @@ jobs:
           MESSAGE='codelist_rules.json updated by GitHub Actions triggered by '$TRIGGERED_BY
           git commit -m "$MESSAGE"
           git push origin "$BRANCH"
-          gh pr create --base=version-2.02 \
+          gh pr create --base=version-$VERSION \
           --title "codelist_rules.json update $VERSION" \
           --body "$MESSAGE"
         env:

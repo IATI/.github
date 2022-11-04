@@ -1,0 +1,20 @@
+name: Trigger update of DSS filters repository
+
+on:
+  workflow_call:
+    secrets:
+      IATI_BOT_PAT:
+        required: true
+
+jobs:
+  update-dss-filters:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Trigger update of DSS filters repository"
+        run: |
+          gh workflow run dispatch-CI.yaml \
+          --repo "IATI/dss-filters" \
+          -f repo=$GITHUB_REPOSITORY \
+          -f sha=$GITHUB_SHA
+        env:
+          GITHUB_TOKEN: ${{ secrets.IATI_BOT_PAT }}

@@ -4,6 +4,7 @@ on:
   workflow_call:
     inputs:
       artifact:
+        description: Name of build artifact to save
         required: true
         type: string
 

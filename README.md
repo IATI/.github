@@ -25,3 +25,40 @@ Pseudo Logic:
 ### cd_example.yaml
 
 Example of how to use `should_run.yaml` reusable workflow in your deployment workflow to control if it should run on nightly scheduled run.
+
+### build_node_save.yaml
+
+Builds a Node.js project with npm, no saving
+
+```yaml
+build:
+    uses: IATI/.github/.github/workflows/build_node_save.yaml@main
+    with:
+      save_artifact: false
+```
+
+Optionally zips and saves that project to a github artifact called `build-artifact-dev`:
+
+```yaml
+build_save:
+    uses: IATI/.github/.github/workflows/build_node_save.yaml@main
+    with:
+      save_artifact: true
+      artifact_name: build-artifact-dev
+```
+
+If saving the artifact, you can download and unzip it for later steps with
+
+```yaml
+steps:
+  - name: Download build artifact
+    uses: actions/download-artifact@v3
+    with:
+      name: build-artifact-dev
+
+  - name: Unzip build artifact
+    run: |
+      unzip build-artifact-dev.zip
+      rm build-artifact-dev.zip
+```
+

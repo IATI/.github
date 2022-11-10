@@ -1,0 +1,33 @@
+name: Build Node Project and save to artifact
+
+on:
+  workflow_call:
+    inputs:
+      artifact:
+        required: true
+        type: string
+
+jobs:
+  build:
+      runs-on: ubuntu-latest
+      steps:
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@v3
+
+        - name: 'Setup Node Environment'
+          uses: actions/setup-node@v3.5.1
+          with:
+            node-version-file: '.nvmrc'
+            cache: 'npm'
+
+        - name: 'Install Dependencies with Npm'
+          run: |
+            npm i -g npm
+            npm pkg delete scripts.prepare
+            npm ci --production
+
+        - name: Archive production artifacts
+          uses: actions/upload-artifact@v3
+          with:
+            name: ${{ inputs.artifact }}
+            path: .

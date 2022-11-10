@@ -27,8 +27,12 @@ jobs:
             npm pkg delete scripts.prepare
             npm ci --production
 
-        - name: Archive production artifacts
+        - name: 'Zip contents for quicker upload'
+          run: |
+            zip ${{ inputs.artifact }}.zip .
+
+        - name: Archive build artifacts
           uses: actions/upload-artifact@v3
           with:
             name: ${{ inputs.artifact }}
-            path: .
+            path: ${{ inputs.artifact }}.zip

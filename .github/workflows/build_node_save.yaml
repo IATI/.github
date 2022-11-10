@@ -1,11 +1,16 @@
-name: Build Node Project and save to artifact
+name: Build Node Project and optionally save to artifact
 
 on:
   workflow_call:
     inputs:
-      artifact:
-        description: Name of build artifact to save
-        required: true
+      save_artifact:
+        description: save the build in an artifact
+        type: boolean
+        required: false
+        default: false
+      artifact_name:
+        description: Name of build artifact to save, if save_artifact is true
+        required: false
         type: string
 
 jobs:
@@ -28,11 +33,13 @@ jobs:
             npm ci --production
 
         - name: 'Zip contents for quicker upload'
+          if: inputs.save_artifact
           run: |
-            zip -r ${{ inputs.artifact }}.zip .
+            zip -r ${{ inputs.artifact_name }}.zip .
 
         - name: Archive build artifacts
+          if: inputs.save_artifact
           uses: actions/upload-artifact@v3
           with:
-            name: ${{ inputs.artifact }}
-            path: ${{ inputs.artifact }}.zip
+            name: ${{ inputs.artifact_name }}
+            path: ${{ inputs.artifact_name }}.zip

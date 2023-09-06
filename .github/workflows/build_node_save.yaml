@@ -26,9 +26,10 @@ jobs:
             node-version-file: '.nvmrc'
             cache: 'npm'
 
+        # The following step install npm^9. npm@10 requires node 18, so until we upgrade all our software we must use an older version.
         - name: 'Install Dependencies with Npm'
           run: |
-            npm i -g npm
+            npm i -g "npm@^9"
             npm pkg delete scripts.prepare
             npm ci --production
 

@@ -52,7 +52,7 @@ If saving the artifact, you can download and unzip it for later steps with
 ```yaml
 steps:
   - name: Download build artifact
-    uses: actions/download-artifact@v3
+    uses: actions/download-artifact@v4
     with:
       name: build-artifact-dev
 

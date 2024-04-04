@@ -12,6 +12,11 @@ on:
         description: Name of build artifact to save, if save_artifact is true
         required: false
         type: string
+      npm_version:
+        description: Version of npm to use
+        required: false
+        default: '^9'
+        type: string
 
 jobs:
   build:
@@ -26,10 +31,9 @@ jobs:
             node-version-file: '.nvmrc'
             cache: 'npm'
 
-        # The following step install npm^9. npm@10 requires node 18, so until we upgrade all our software we must use an older version.
         - name: 'Install Dependencies with Npm'
           run: |
-            npm i -g "npm@^9"
+            npm i -g "npm@${{ inputs.npm_version }}"
             npm pkg delete scripts.prepare
             npm ci --production
 

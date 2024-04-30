@@ -1,5 +1,17 @@
 # .github
 
+# Summary
+
+ Product  |  Organisation-wide Github Actions Workflows
+--- | --- 
+Description | Github Actions workflows which are used across the range of IATI Github repos for continuous integration and deployment.
+Website |  None
+Related | Most in-use IATI apps.
+Documentation | Rest of README
+Technical Issues | See https://github.com/IATI/.github/issues
+Support | https://iatistandard.org/en/guidance/get-support/
+
+
 ## Code of Conduct
 
 https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file

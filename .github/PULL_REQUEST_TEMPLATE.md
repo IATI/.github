@@ -8,7 +8,7 @@ One/two line summary of the PR.
 
 ## How to verify
 
-- If it's not obvious, explain how reviewers can verify
+- If it's not obvious, explain how reviewers can verify (include details/screenshots here if appropriate)
 - Delete this section if it doesn't apply
 
 ## Review focus
@@ -21,4 +21,4 @@ One/two line summary of the PR.
 - [ ] Tests added and pass
 - [ ] Linters have been run
 - [ ] Docs updated
-- [ ] CHANGELOG updated and version bumped (if appropriate)
+- [ ] CHANGELOG updated and version bumped (committed or ready to be so, as and where appropriate)
